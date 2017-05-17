@@ -7,6 +7,7 @@ void imprime(void);
 void allusers(void);
 void espuser(void);
 void main2(void);
+void psico(void);
 void psicverm(void);
 void psicama(void);
 void psiclar(void);
@@ -30,8 +31,11 @@ void branco(void);
 void preto(void);
 void cinza(void);
 void signs(void);
-void psico(void);
-void sair(void);
+void admin(void);
+void deluser(void);
+void user(void);
+void humor(void);
+void fcadastro(void);
 
 /*********************************/
 /*Struct principal de cadastro*/
@@ -49,10 +53,147 @@ struct rgcad{
 }cadastro[20];//Máximo de 20 Cadastros
     struct rgcad cadglobal;//Struct para armazenar apenas a quantidade de usuários a cadastrar
     struct rgcad excluir;//Struct vazia para excluir usuários
+int main ()
+{
+system("color F0");//Instrução para alterar cor
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    printf("\t\tEscolha uma das Opções:\n\n");
+    printf("1. Administrador\n");
+    printf("2. Usuário\n");
+    printf("0. Sair\n");
+    scanf("%d", &continuar);
+    system("cls || clear");
+    switch(continuar)
+    {
+        case 1:
+          admin();
+          break;
+        case 2:
+          user();
+          break;
+        case 0:
+          printf("\nFeito por:\n\nGetúlio F M Neto\nYldervan B Silva\nAnderson M Fortaleza\nLaiza Larissa\nRafael Werner.\n");
+          printf("\nTodos os Direitos Reservados.");
+          break;
+    default:
+    printf("Digite uma opção válida!\n");
+    }
+    return 0;
+}
+
+void user ()
+{
+    system("color F0");//Instrução para alterar cor
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    printf("\t\tEscolha uma das Opções:\n\n");
+    printf("1. Como está seu humor hoje?\n");
+    printf("2. Qual sua cor Preferida?\n");
+    printf("3. Quer saber o significado das Cores?\n");
+    printf("0. Voltar\n");
+    scanf("%d", &continuar);
+    system("cls || clear");
+    switch(continuar)
+    {
+        case 1:
+          humor();
+          break;
+        case 2:
+          psico();
+          break;
+        case 3:
+          signs();
+          break;
+        case 0:
+          main();
+          break;
+    default:
+    printf("Digite uma opção válida!\n");
+    }
+}
+
+void humor ()
+{
+   system("color F0");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    printf("\t\t====================================================\n");
+    printf("\t\t\tEscolha uma opção de acordo com seu Humor\n");
+    printf("\t\t====================================================\n");
+    printf("\t\t Como está seu humor agora?\n\n");
+    printf("1. Alegre:\n");
+    printf("2. Feliz:\n");
+    printf("3. Pensativo:\n");
+    printf("4. Confiante:\n");
+    printf("5. Motivado:\n");
+    printf("6. Cansado:\n");
+    printf("7. Ansioso:\n");
+    printf("8. Deprimido:\n");
+    printf("9. Sonolento:\n");
+    printf("10. Triste:\n");
+    printf("11. Inseguro:\n");
+    printf("\n0. Voltar\n");
+    scanf("%d", &continuar);
+    system("cls || clear");
+    switch(continuar)
+      {
+         case 1:
+             psicverm();
+         break;
+
+         case 2:
+             psiclar();
+        break;
+
+         case 3:
+           psicama();
+         break;
+
+         case 4:
+           psicverde();
+         break;
+
+         case 5:
+           psicazul();
+         break;
+
+         case 6:
+           psicroxo();
+         break;
+
+         case 7:
+           psicmarrom();
+         break;
+
+         case 8:
+           psicrosa();
+         break;
+
+         case 9:
+           psicbranco();
+         break;
+
+         case 10:
+           psicpreto();
+         break;
+
+         case 11:
+           psicinza();
+         break;
+
+         case 0:
+            user();
+         break;
+    default:
+    printf("Digite uma opção válida!\n");
+
+    }
+}
 
 /*********************************************************/
-/*Função Principal com o menu para escolher a opção certa*/
-void main()
+/*Função Admin com o menu para escolher a opção certa*/
+void admin()
 {
     system("color F0");//Instrução para alterar cor
     int continuar=1;
@@ -63,7 +204,7 @@ void main()
     printf("3. Excluir Usuário Cadastrado:\n");
     printf("4. Significados das Cores:\n");
     printf("5. A Psicologia e sua cor Preferida:\n");
-    printf("0. Sair\n");
+    printf("0. Voltar\n");
     scanf("%d", &continuar);
     system("cls || clear");
     switch(continuar)
@@ -84,8 +225,7 @@ void main()
           psico();
           break;
         case 0:
-          printf("\nFeito por:\n\nGetúlio F M Neto\nYldervan B Silva\nAnderson M Fortaleza\nLaiza Larissa\nRafael Werner.\n");
-          printf("\nTodos os Direitos Reservados.");
+          main();
           break;
     default:
     printf("Digite uma opção válida!\n");
@@ -141,7 +281,7 @@ void fcadastro()
         switch(continuar)
         {
            case 0:
-                main();
+                admin();
                 break;
 
             default:
@@ -173,7 +313,7 @@ void imprime ()
             break;
 
         case 0:
-            main();
+            admin();
             break;
 
         default:
@@ -205,7 +345,7 @@ void espuser ()
         printf("Nome: %s\nEndereço: %s\nEmail: %s\nTelefone: %s\nCPF: %s\nRG: %s\nCEP: %i\nSexo: %s\nData Nascimento %d de %d de %d\n", cadastro[i].nome, cadastro[i].end, cadastro[i].email, cadastro[i].tel, cadastro[i].cpf, cadastro[i].rg, cadastro[i].cep, cadastro[i].sexo, cadastro[i].d, cadastro[i].m, cadastro[i].a);
         break;
            case 0:
-                main();
+                admin();
                 break;
             default:
                 printf("Digite uma opção válida!\n");
@@ -230,7 +370,7 @@ void allusers ()
         switch(continuar)
         {
            case 0:
-                main();
+                admin();
                 break;
 
             default:
@@ -267,7 +407,7 @@ void deluser ()
         case 2:
                 printf("Nome: %s\nEndereço: %s\nEmail: %s\nTelefone: %s\nCPF: %s\nRG: %s\nCEP: %i\nSexo: %s\nData Nascimento %d de %d de %d\n", cadastro[i].nome, cadastro[i].end, cadastro[i].email, cadastro[i].tel, cadastro[i].cpf, cadastro[i].rg, cadastro[i].cep, cadastro[i].sexo, cadastro[i].d, cadastro[i].m, cadastro[i].a);
            case 0:
-                main();
+                admin();
                 break;
             default:
                 printf("Digite uma opção válida!\n");
