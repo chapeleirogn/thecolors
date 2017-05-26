@@ -3,6 +3,10 @@
 #include <locale.h>
 #include <string.h>
 #include <conio.h>
+#include <mysql.h>
+#include <winsock.h>
+#include <winsock2.h>
+
 void imprime(void);
 void allusers(void);
 void espuser(void);
@@ -36,21 +40,24 @@ void deluser(void);
 void user(void);
 void humor(void);
 void fcadastro(void);
-
 /*********************************/
 /*Struct principal de cadastro*/
 struct rgcad{
+    char login[12];
+    char psw[12];
     char nome[40];
     char end[50];
     char email[35];
     char tel[20];
     char cpf[20];
     char rg[20];
-    int cep;
     char sexo[15];
+    int permissao;
+    int cep;
+    int idade;
     int d,m,a;
     int contuser;
-}cadastro[20];//Máximo de 20 Cadastros
+}cadastro[100];//Máximo de 20 Cadastros
     struct rgcad cadglobal;//Struct para armazenar apenas a quantidade de usuários a cadastrar
     struct rgcad excluir;//Struct vazia para excluir usuários
 int main ()
@@ -61,6 +68,7 @@ system("color F0");//Instrução para alterar cor
     printf("\t\tEscolha uma das Opções:\n\n");
     printf("1. Administrador\n");
     printf("2. Usuário\n");
+    printf("3. Salvar no MySql:\n");
     printf("0. Sair\n");
     scanf("%d", &continuar);
     system("cls || clear");
@@ -81,7 +89,6 @@ system("color F0");//Instrução para alterar cor
     }
     return 0;
 }
-
 void user ()
 {
     system("color F0");//Instrução para alterar cor
@@ -112,7 +119,6 @@ void user ()
     printf("Digite uma opção válida!\n");
     }
 }
-
 void humor ()
 {
    system("color F0");
@@ -190,7 +196,6 @@ void humor ()
 
     }
 }
-
 /*********************************************************/
 /*Função Admin com o menu para escolher a opção certa*/
 void admin()
@@ -231,15 +236,24 @@ void admin()
     printf("Digite uma opção válida!\n");
     }
 }
-
 /*************************************************/
 /*Função de Cadastro de Usuários*/
 void fcadastro()
 {
+
       int i, continuar=1;
-      printf("Quantos Usuários deseja cadastrar? (Máximo 20)\n");
+      printf("Quantos Usuários deseja cadastrar? (Máximo 100)\n");
       scanf("%i", &cadglobal.contuser);//Armazena a quantidade numa variavel global
       for (i=0;i<cadglobal.contuser;i++){
+      fflush(stdin);
+      printf("Digite seu Login:\n");
+      gets(cadastro[i].login);
+      fflush(stdin);
+      printf("Digite sua senha:\n");
+      gets(cadastro[i].psw);
+      fflush(stdin);
+      printf("Digite o Cargo:\n1. Administrador.\n2. Usuário.\n");
+      scanf("%i",&cadastro[i].permissao);
       fflush(stdin);
       printf("Digite seu Nome:\n");
       gets(cadastro[i].nome);
@@ -271,9 +285,31 @@ void fcadastro()
       printf("\nAno:\n");
       scanf("%d",&cadastro[i].a);
       fflush(stdin);
+      printf("Digite sua idade:\n");
+      scanf("%d", &cadastro[i].idade);
       printf("\nCadastro Concluído com Sucesso!\n\n");
-      }
-      do //Repetição para perguntar a cor
+    int res;
+    char* query[100];
+    MYSQL conexao;
+    mysql_init(&conexao);
+    if ( mysql_real_connect(&conexao, "localhost", "root", "", "thecolors", 0, NULL, 0) )
+    {
+    printf("conectado com sucesso!\n");
+    sprintf(query,"INSERT INTO usuarios (login, senha, permissao, nome, end, email, tel, cpf, rg, cep, sexo, d, m, a, idade) values ('%s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d');", cadastro[i].login, cadastro[i].psw,cadastro[i].permissao,cadastro[i].nome,cadastro[i].end,cadastro[i].email,cadastro[i].tel,cadastro[i].cpf,cadastro[i].rg,cadastro[i].cep,cadastro[i].sexo,cadastro[i].d,cadastro[i].m,cadastro[i].a,cadastro[i].idade);
+    res = mysql_query(&conexao,query);
+    if (!res) printf("Registros inseridos %d\n", mysql_affected_rows(&conexao));
+    else printf("Erro na inserção %d : %s\n", mysql_errno(&conexao), mysql_error(&conexao));
+
+
+    mysql_close(&conexao);
+    }
+    else
+    {
+    printf("Falha de conexao\n");
+    printf("Erro %d : %s\n", mysql_errno(&conexao), mysql_error(&conexao));
+    }
+
+     do //Repetição para perguntar a cor
       {
         printf("0. Voltar\n");
         scanf("%d", &continuar);
@@ -288,6 +324,7 @@ void fcadastro()
                 printf("Digite uma opção válida!\n");
         }
     } while(continuar);
+}
 }
 
 /*************************************************/
@@ -414,7 +451,6 @@ void deluser ()
         }
     } while(continuar);
 }
-
 /*************************************************/
 /*Função para Escolher a cor Preferida e Imprimir o Significado Psicologico dela*/
 void psico ()
@@ -742,7 +778,6 @@ void psicinza()
         }
     } while(continuar);
 }
-
 /***************************************************************************/
 /*Função com Menu para Imprimir Significado das Cores e outras Informações*/
 /***************************************************************************/
