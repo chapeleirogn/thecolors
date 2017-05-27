@@ -7,6 +7,13 @@
 #include <winsock.h>
 #include <winsock2.h>
 
+void finish_with_error(MYSQL *con)
+{
+  fprintf(stderr, "%s\n", mysql_error(con));
+  mysql_close(con);
+  exit(1);
+}
+
 void imprime(void);
 void allusers(void);
 void espuser(void);
@@ -44,18 +51,13 @@ void fcadastro(void);
 /*Struct principal de cadastro*/
 struct rgcad{
     char login[12];
-    char psw[12];
+    char passe[12];
     char nome[40];
-    char end[50];
     char email[35];
-    char tel[20];
-    char cpf[20];
-    char rg[20];
     char sexo[15];
-    int permissao;
-    int cep;
-    int idade;
-    int d,m,a;
+    char dnasc[10];
+    char permissao[1];
+    int idade[2];
     int contuser;
 }cadastro[100];//Máximo de 20 Cadastros
     struct rgcad cadglobal;//Struct para armazenar apenas a quantidade de usuários a cadastrar
@@ -205,7 +207,7 @@ void admin()
     setlocale(LC_ALL, "portuguese");
     printf("\t\tEscolha uma das Opções:\n\n");
     printf("1. Cadastro de Usuário:\n");
-    printf("2. Imprimir Usuários Cadastrados:\n");
+    printf("2. Salvar no MYSQL:\n");
     printf("3. Excluir Usuário Cadastrado:\n");
     printf("4. Significados das Cores:\n");
     printf("5. A Psicologia e sua cor Preferida:\n");
@@ -218,13 +220,13 @@ void admin()
           fcadastro();
           break;
         case 2:
-          imprime();
+          my_sql();
           break;
         case 3:
-            deluser();
+          printf("Em Breve!\n");
             break;
         case 4:
-          signs();
+          printf("Em Breve!\n");
           break;
         case 5:
           psico();
@@ -250,64 +252,26 @@ void fcadastro()
       gets(cadastro[i].login);
       fflush(stdin);
       printf("Digite sua senha:\n");
-      gets(cadastro[i].psw);
+      gets(cadastro[i].passe);
       fflush(stdin);
       printf("Digite o Cargo:\n1. Administrador.\n2. Usuário.\n");
-      scanf("%i",&cadastro[i].permissao);
+      gets(cadastro[i].permissao);
       fflush(stdin);
       printf("Digite seu Nome:\n");
       gets(cadastro[i].nome);
       fflush(stdin);
-      printf("Digite seu Endereco:\n");
-      gets(cadastro[i].end);
-      fflush(stdin);
       printf("Digite seu Email:\n");
       gets(cadastro[i].email);
       fflush(stdin);
-      printf("Digite seu Telefone:\n");
-      gets(cadastro[i].tel);
-      fflush(stdin);
-      printf("Digite seu CPF:\n");
-      gets(cadastro[i].cpf);
-      fflush(stdin);
-      printf("Digite seu RG:\n");
-      gets(cadastro[i].rg);
-      printf("Digite seu CEP:\n");
-      scanf("%d",&cadastro[i].cep);
-      fflush(stdin);
       printf("Digite Masculino ou Feminino:\n");
       gets(cadastro[i].sexo);
-      printf("Digite sua data de nascimento:\n");
-      printf("Dia:\n");
-      scanf("%d",&cadastro[i].d);
-      printf("\nMês:\n");
-      scanf("%d",&cadastro[i].m);
-      printf("\nAno:\n");
-      scanf("%d",&cadastro[i].a);
+      fflush(stdin);
+      printf("Digite sua data de nascimento:(xx/xx/xxxx)\n");
+      gets(cadastro[i].dnasc);
       fflush(stdin);
       printf("Digite sua idade:\n");
-      scanf("%d", &cadastro[i].idade);
+      gets(cadastro[i].idade);
       printf("\nCadastro Concluído com Sucesso!\n\n");
-    int res;
-    char* query[100];
-    MYSQL conexao;
-    mysql_init(&conexao);
-    if ( mysql_real_connect(&conexao, "localhost", "root", "", "thecolors", 0, NULL, 0) )
-    {
-    printf("conectado com sucesso!\n");
-    sprintf(query,"INSERT INTO usuarios (login, senha, permissao, nome, end, email, tel, cpf, rg, cep, sexo, d, m, a, idade) values ('%s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %s, %d, %d, %d, %d');", cadastro[i].login, cadastro[i].psw,cadastro[i].permissao,cadastro[i].nome,cadastro[i].end,cadastro[i].email,cadastro[i].tel,cadastro[i].cpf,cadastro[i].rg,cadastro[i].cep,cadastro[i].sexo,cadastro[i].d,cadastro[i].m,cadastro[i].a,cadastro[i].idade);
-    res = mysql_query(&conexao,query);
-    if (!res) printf("Registros inseridos %d\n", mysql_affected_rows(&conexao));
-    else printf("Erro na inserção %d : %s\n", mysql_errno(&conexao), mysql_error(&conexao));
-
-
-    mysql_close(&conexao);
-    }
-    else
-    {
-    printf("Falha de conexao\n");
-    printf("Erro %d : %s\n", mysql_errno(&conexao), mysql_error(&conexao));
-    }
 
      do //Repetição para perguntar a cor
       {
@@ -327,129 +291,43 @@ void fcadastro()
 }
 }
 
-/*************************************************/
-/*Função com menu para Imprimir usuários cadastrados*/
-void imprime ()
-{
-    int continuar=1;
-    do //Repetição para perguntar a cor
-    {
-        printf("Escolha uma das Opções de Impressão:\n");
-        printf("1. Imprimir Usuário específico.\n");
-        printf("2. Imprimir Todos os Usuários.\n");
-        printf("\n0. Voltar\n");
-        scanf("%d", &continuar);
-        system("cls || clear");
-        switch(continuar)
-        {
-        case 1:
-            espuser();
-            break;
-        case 2:
-            allusers();
-            break;
-
-        case 0:
-            admin();
-            break;
-
-        default:
-            printf("Digite uma opção válida!\n");
-        }
-    } while(continuar);
-}
-/*Função de Imprimir Usuário específico*/
-void espuser ()
+void my_sql()
 {
     int i;
-    printf("Digite o Numero do Usuário a imprimir:\n");
-    scanf("%d", &i);
-    printf("Usuário %d:\n", i);
-    printf("Nome: %s\nEndereço: %s\nEmail: %s\nTelefone: %s\nCPF: %s\nRG: %s\nCEP: %i\nSexo: %s\nData Nascimento %d de %d de %d\n", cadastro[i].nome, cadastro[i].end, cadastro[i].email, cadastro[i].tel, cadastro[i].cpf, cadastro[i].rg, cadastro[i].cep, cadastro[i].sexo, cadastro[i].d, cadastro[i].m, cadastro[i].a);
-    int continuar=1;
-      do //Repetição para perguntar a cor
-      {
-        printf("1. Imprimir Outro:\n");
-        printf("0. Voltar\n");
-        scanf("%d", &continuar);
-        system("cls || clear");
-        switch(continuar)
-        {
-        case 1:
-        printf("Digite o Numero do Usuário a imprimir:\n");
-        scanf("%d", &i);
-        printf("Usuário %d:\n", i);
-        printf("Nome: %s\nEndereço: %s\nEmail: %s\nTelefone: %s\nCPF: %s\nRG: %s\nCEP: %i\nSexo: %s\nData Nascimento %d de %d de %d\n", cadastro[i].nome, cadastro[i].end, cadastro[i].email, cadastro[i].tel, cadastro[i].cpf, cadastro[i].rg, cadastro[i].cep, cadastro[i].sexo, cadastro[i].d, cadastro[i].m, cadastro[i].a);
-        break;
-           case 0:
-                admin();
-                break;
-            default:
-                printf("Digite uma opção válida!\n");
-        }
-    } while(continuar);
-}
-/*Função para Imprimir todos os Usuários*/
-void allusers ()
-{
-    int i;
-    for (i=0;i<cadglobal.contuser;i++)//Lê a variável global com a quantidade de Usuários
+    char sql[200];
+        MYSQL *con = mysql_init(NULL);
+
+    if (con == NULL)
     {
-        printf("\nUsuário %d:\n", i);
-        printf("Nome: %s\nEndereço: %s\nEmail: %s\nTelefone: %s\nCPF: %s\nRG: %s\nCEP: %i\nSexo: %s\nData Nascimento %d de %d de %d\n\n", cadastro[i].nome, cadastro[i].end, cadastro[i].email, cadastro[i].tel, cadastro[i].cpf, cadastro[i].rg, cadastro[i].cep, cadastro[i].sexo, cadastro[i].d, cadastro[i].m, cadastro[i].a);
+      fprintf(stderr, "%s\n", mysql_error(con));
+      exit(1);
     }
-        int continuar=1;
-      do //Repetição para perguntar a cor
-      {
-        printf("0. Voltar\n");
-        scanf("%d", &continuar);
-        system("cls || clear");
-        switch(continuar)
-        {
-           case 0:
-                admin();
-                break;
 
-            default:
-                printf("Digite uma opção válida!\n");
-        }
-    } while(continuar);
+    if (mysql_real_connect(con, "localhost", "root", "",
+          "thecolors", 0, NULL, 0) == NULL)
+    {
+      finish_with_error(con);
+    }
+
+    if (mysql_query(con, "CREATE TABLE IF NOT EXISTS usuarios(login VARCHAR, passe VARCHAR, permissao VARCHAR, nome VARCHAR, email VARCHAR, sexo VARCHAR, dnasc VARCHAR, idade VARCHAR)")) {
+      finish_with_error(con);
+    }
+    for (i=0;i<cadglobal.contuser;i++)
+    {
+      if (sprintf(sql, "INSERT INTO usuarios VALUES('%s','%s','%s','%s','%s','%s','%s','%s')",
+            cadastro[i].login,
+            cadastro[i].passe,
+            cadastro[i].permissao,
+            cadastro[i].nome,
+            cadastro[i].email,
+            cadastro[i].sexo,
+            cadastro[i].dnasc,
+            cadastro[i].idade)) {
+      finish_with_error(con);
+    }
+  mysql_close(con);
+  exit(0);
 }
-/*Função para Deletar Usuário Específico*/
-void deluser ()
-{
-    int i;
-    printf("Digite o Numero do Usuário a Excluir:\n");
-    scanf("%d", &i);
-    printf("Usuário %d:\n", i);
-    cadastro[i]=excluir;//Substitui por uma struct vazia
-    printf("Usuário Excluído com Sucesso!\n");
-    int continuar=1;
-      do //Repetição para perguntar a cor
-      {
-        printf("1. Excluir Outro:\n");
-        printf("2. Confirmar Exclusão\n");
-        printf("0. Voltar\n");
-        scanf("%d", &continuar);
-        system("cls || clear");
-        switch(continuar)
-        {
-        case 1:
-            printf("Digite o Numero do Usuário a Excluir:\n");
-            scanf("%d", &i);
-            printf("Usuário %d:\n", i);
-            cadastro[i]=excluir;
-            printf("Usuário Excluído com Sucesso!\n");
-            break;
-        case 2:
-                printf("Nome: %s\nEndereço: %s\nEmail: %s\nTelefone: %s\nCPF: %s\nRG: %s\nCEP: %i\nSexo: %s\nData Nascimento %d de %d de %d\n", cadastro[i].nome, cadastro[i].end, cadastro[i].email, cadastro[i].tel, cadastro[i].cpf, cadastro[i].rg, cadastro[i].cep, cadastro[i].sexo, cadastro[i].d, cadastro[i].m, cadastro[i].a);
-           case 0:
-                admin();
-                break;
-            default:
-                printf("Digite uma opção válida!\n");
-        }
-    } while(continuar);
 }
 /*************************************************/
 /*Função para Escolher a cor Preferida e Imprimir o Significado Psicologico dela*/
