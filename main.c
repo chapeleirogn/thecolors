@@ -59,9 +59,7 @@ struct rgcad{
     char permissao[1];
     char idade[2];
     int contuser;
-}cadastro[100];//Máximo de 20 Cadastros
-    struct rgcad cadglobal;//Struct para armazenar apenas a quantidade de usuários a cadastrar
-    struct rgcad excluir;//Struct vazia para excluir usuários
+}cadastro;
 int main ()
 {
 system("color F0");//Instrução para alterar cor
@@ -220,7 +218,7 @@ void admin()
           fcadastro();
           break;
         case 2:
-          my_sql();
+          printf("Em Breve!\n");
           break;
         case 3:
           printf("Em Breve!\n");
@@ -242,84 +240,60 @@ void admin()
 /*Função de Cadastro de Usuários*/
 void fcadastro()
 {
-      int i, continuar=1;
-      printf("Quantos Usuários deseja cadastrar? (Máximo 100)\n");
-      scanf("%i", &cadglobal.contuser);//Armazena a quantidade numa variavel global
-      for (i=0;i<cadglobal.contuser;i++){
       fflush(stdin);
       printf("Digite seu Login:\n");
-      gets(cadastro[i].login);
+      gets(cadastro.login);
       fflush(stdin);
       printf("Digite sua senha:\n");
-      gets(cadastro[i].passe);
+      gets(cadastro.passe);
       fflush(stdin);
       printf("Digite o Cargo:\n1. Administrador.\n2. Usuário.\n");
-      gets(cadastro[i].permissao);
+      gets(cadastro.permissao);
       fflush(stdin);
       printf("Digite seu Nome:\n");
-      gets(cadastro[i].nome);
+      gets(cadastro.nome);
       fflush(stdin);
       printf("Digite seu Email:\n");
-      gets(cadastro[i].email);
+      gets(cadastro.email);
       fflush(stdin);
       printf("Digite Masculino ou Feminino:\n");
-      gets(cadastro[i].sexo);
+      gets(cadastro.sexo);
       fflush(stdin);
       printf("Digite sua data de nascimento:(xx/xx/xxxx)\n");
-      gets(cadastro[i].dnasc);
+      gets(cadastro.dnasc);
       fflush(stdin);
       printf("Digite sua idade:\n");
-      gets(cadastro[i].idade);
+      gets(cadastro.idade);
       printf("\nCadastro Concluído com Sucesso!\n\n");
+      my_sql();
 }
-     do //Repetição para perguntar a cor
-      {
-        printf("0. Voltar\n");
-        scanf("%d", &continuar);
-        system("cls || clear");
-        switch(continuar)
-        {
-           case 0:
-                admin();
-                break;
-
-            default:
-                printf("Digite uma opção válida!\n");
-        }
-    } while(continuar);
-}
-
-
 void my_sql()
 {
-    int i;
     int continuar=1;
     char sql[2000] = "INSERT INTO usuarios(login,passe,permissao,nome,email,sexo,dnasc,idade) VALUES('";
     MYSQL conexao;
     mysql_init(&conexao);
     if ( mysql_real_connect(&conexao, "localhost", "root", "", "thecolors", 0, NULL, 0) )
     {
-      for (i=0;i<cadglobal.contuser;i++)
-    {
-      strcat(sql, cadastro[i].login);
+      strcat(sql, cadastro.login);
       strcat(sql, "','");
-      strcat(sql, cadastro[i].passe);
+      strcat(sql, cadastro.passe);
       strcat(sql, "','");
-      strcat(sql, cadastro[i].permissao);
+      strcat(sql, cadastro.permissao);
       strcat(sql, "','");
-      strcat(sql, cadastro[i].nome);
+      strcat(sql, cadastro.nome);
       strcat(sql, "','");
-      strcat(sql, cadastro[i].email);
+      strcat(sql, cadastro.email);
       strcat(sql, "','");
-      strcat(sql, cadastro[i].sexo);
+      strcat(sql, cadastro.sexo);
       strcat(sql, "','");
-      strcat(sql, cadastro[i].dnasc);
+      strcat(sql, cadastro.dnasc);
       strcat(sql, "','");
-      strcat(sql, cadastro[i].idade);
+      strcat(sql, cadastro.idade);
       strcat(sql, "');");
-    }
 
-        printf("conectado com sucesso!\n");
+
+        printf("Salvo com Sucesso!\n");
         mysql_query(&conexao, sql);
         mysql_close(&conexao);
     }
@@ -330,14 +304,17 @@ void my_sql()
     }
      do //Repetição para perguntar a cor
       {
+        printf("1. Cadastrar Outro Usuário:\n");
         printf("0. Voltar\n");
         scanf("%d", &continuar);
         system("cls || clear");
         switch(continuar)
         {
-           case 0:
-                admin();
-                break;
+             case 1:
+              fcadastro();
+             case 0:
+              admin();
+             break;
 
             default:
                 printf("Digite uma opção válida!\n");
