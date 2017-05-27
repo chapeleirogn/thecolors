@@ -57,7 +57,7 @@ struct rgcad{
     char sexo[15];
     char dnasc[10];
     char permissao[1];
-    int idade[2];
+    char idade[2];
     int contuser;
 }cadastro[100];//Máximo de 20 Cadastros
     struct rgcad cadglobal;//Struct para armazenar apenas a quantidade de usuários a cadastrar
@@ -242,7 +242,6 @@ void admin()
 /*Função de Cadastro de Usuários*/
 void fcadastro()
 {
-
       int i, continuar=1;
       printf("Quantos Usuários deseja cadastrar? (Máximo 100)\n");
       scanf("%i", &cadglobal.contuser);//Armazena a quantidade numa variavel global
@@ -272,7 +271,7 @@ void fcadastro()
       printf("Digite sua idade:\n");
       gets(cadastro[i].idade);
       printf("\nCadastro Concluído com Sucesso!\n\n");
-
+}
      do //Repetição para perguntar a cor
       {
         printf("0. Voltar\n");
@@ -289,45 +288,61 @@ void fcadastro()
         }
     } while(continuar);
 }
-}
+
 
 void my_sql()
 {
     int i;
-    char sql[200];
-        MYSQL *con = mysql_init(NULL);
-
-    if (con == NULL)
+    int continuar=1;
+    char sql[2000] = "INSERT INTO usuarios(login,passe,permissao,nome,email,sexo,dnasc,idade) VALUES('";
+    MYSQL conexao;
+    mysql_init(&conexao);
+    if ( mysql_real_connect(&conexao, "localhost", "root", "", "thecolors", 0, NULL, 0) )
     {
-      fprintf(stderr, "%s\n", mysql_error(con));
-      exit(1);
+      for (i=0;i<cadglobal.contuser;i++)
+    {
+      strcat(sql, cadastro[i].login);
+      strcat(sql, "','");
+      strcat(sql, cadastro[i].passe);
+      strcat(sql, "','");
+      strcat(sql, cadastro[i].permissao);
+      strcat(sql, "','");
+      strcat(sql, cadastro[i].nome);
+      strcat(sql, "','");
+      strcat(sql, cadastro[i].email);
+      strcat(sql, "','");
+      strcat(sql, cadastro[i].sexo);
+      strcat(sql, "','");
+      strcat(sql, cadastro[i].dnasc);
+      strcat(sql, "','");
+      strcat(sql, cadastro[i].idade);
+      strcat(sql, "');");
     }
 
-    if (mysql_real_connect(con, "localhost", "root", "",
-          "thecolors", 0, NULL, 0) == NULL)
-    {
-      finish_with_error(con);
+        printf("conectado com sucesso!\n");
+        mysql_query(&conexao, sql);
+        mysql_close(&conexao);
     }
+    else
+    {
+        printf("Falha de conexao\n");
+        printf("Erro %d : %s\n", mysql_errno(&conexao), mysql_error(&conexao));
+    }
+     do //Repetição para perguntar a cor
+      {
+        printf("0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+           case 0:
+                admin();
+                break;
 
-    if (mysql_query(con, "CREATE TABLE IF NOT EXISTS usuarios(login VARCHAR, passe VARCHAR, permissao VARCHAR, nome VARCHAR, email VARCHAR, sexo VARCHAR, dnasc VARCHAR, idade VARCHAR)")) {
-      finish_with_error(con);
-    }
-    for (i=0;i<cadglobal.contuser;i++)
-    {
-      if (sprintf(sql, "INSERT INTO usuarios VALUES('%s','%s','%s','%s','%s','%s','%s','%s')",
-            cadastro[i].login,
-            cadastro[i].passe,
-            cadastro[i].permissao,
-            cadastro[i].nome,
-            cadastro[i].email,
-            cadastro[i].sexo,
-            cadastro[i].dnasc,
-            cadastro[i].idade)) {
-      finish_with_error(con);
-    }
-  mysql_close(con);
-  exit(0);
-}
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
 }
 /*************************************************/
 /*Função para Escolher a cor Preferida e Imprimir o Significado Psicologico dela*/
