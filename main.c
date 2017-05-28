@@ -59,91 +59,7 @@ MYSQL_RES *makeQuery(MYSQL conn,char *str);
 void printRes(MYSQL_RES *res);
 void freeRes(MYSQL_RES *res);
 
-//***PRINCIPAL**//
-int main(){
-  MYSQL conn;//variavel de conexao
-  MYSQL_RES *res;//variavel de resultado
-  char *query = "select (login), (senha) from teste;";//query de teste
-
-  mysql_init(&conn);//INICIALIZA CONN
-
-  //TENTA REALIZAR A CONEXAO CASO CONECTE FAZ
-  if(mysql_real_connect(&conn,"localhost","root","","teste",0,NULL,0))
-  {
-    printf("\t\tBanco de Dados conectado!\n\n");
-    res = makeQuery(conn,query);//GUARDA O RESULTADO DA CONSULTA EM RES
-    if(res){//SE A CONSULTA RETORNOU ALGO
-        printf("\t\t\tDigite seu Login: \n");
-        gets(cadastro.loginmain);
-        char *query = "select login from teste;";
-        res = makeQuery(conn,query);
-        printf("%s", res);
-        if (strcmp (cadastro.loginmain,res) == 0 )
-        {
-            freeRes(res);
-            printf("\t\t\tDigite a Senha: \n");
-            gets(cadastro.passemain);
-            char *query = "select (senha) from teste;";
-            res = makeQuery(conn,query);
-            if (strcmp (cadastro.passemain,res) == 0 )
-            {
-                main1();
-            }else
-            {
-                printf("\t\t\tSenha errada!\n");
-            }
-        }else
-        {
-            printf("\t\t\tLogin Inexistente!\n");
-            }
-      freeRes(res);//E LIMPA RES
-    }
-  }else{//CASO A CONEXAO NAO DEU CERTO
-    printf("Erro: %s\n",mysql_error(&conn));//IMPRIME ERRO
-  }
-
-  mysql_close(&conn);//FEIXA CONEXAO COM O BANCO
-  printf("Desconect\n");
-
-return 0;
-}
-
-//***FUNCAO PARA CONSULTA***/
-MYSQL_RES *makeQuery(MYSQL conn,char *str){
-  MYSQL_RES *res;//CRIA VARIAVEL TEMP DE RESULTADO
-  MYSQL conexao;//CRIA VARIAVEL TEMP DE CONEXAO
-  conexao = conn;//ATRIBUI PARA TEMP A CONN
-  if(mysql_query(&conexao,str)){//REALIZA A CONSULTA
-    printf("Erro: %s\n",mysql_error(&conexao));//CASO NAO DE CERTO IMPRIME ERRO
-  }else{//CASO DE CERTO A CONSULTA
-    res = mysql_store_result(&conexao);//GUARDA O RESULTADO EM RES
-    if(res){//SE HOUVER RESULTADO
-      return res;//RETORNA RES
-    }
-  }
-  return NULL;//NO CASO DE ERRO RETORNA NULL
-}
-
-//***FUNCAO PARA IMPRESSAO DE RESULTADO***//
-void printRes(MYSQL_RES *res){
-  MYSQL_ROW rows;//VARIAVEL DE LINHAS(VETOR) (AS TUPLAS DO BANCO)
-  int cont;//CONTADOR
-  //ENQUANTO AS LINHAS FOR DIFERENTE DE NULL FAZ
-  while((rows=mysql_fetch_row(res)) != NULL){
-    //REALIZA O FOR PARA CADA CAMPO DO VETOR DE LINHAS
-    for(cont=0;cont<mysql_num_fields(res);cont++){
-      printf("%s\t",rows[cont]);//IMPRIME
-    }
-    printf("\n");
-  }
-}
-
-//***FUNCAO PARA LIMPAR RES***//
-void freeRes(MYSQL_RES *res){
-  mysql_free_result(res);
-}
-
-void main1 ()
+int main()
 {
 system("color F0");//Instrução para alterar cor
     int continuar=1;
@@ -202,6 +118,447 @@ void user ()
     printf("Digite uma opção válida!\n");
     }
 }
+
+void motiv()
+{
+    system("color 4F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM motiv ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+           case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void feliz()
+{
+    system("color 6F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM feliz ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+            case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+int deprim()
+{
+    system("color 6F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM deprimido ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+            case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void alegre()
+{
+    system("color E0");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM alegria ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+            case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void triste()
+{
+    system("color 2F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM motiv ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+            case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void confiante()
+{
+    system("color 1F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM confiante ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+            case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void cansado()
+{
+    system("color 1F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM cansado ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+            case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void ansioso()
+{
+    system("color F0");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM ansioso ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+            case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void sono()
+{
+    system("color 8F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM cansado ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+           case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+void inseg()
+{
+    system("color 8F");
+    int continuar=1;
+    setlocale(LC_ALL, "portuguese");
+    MYSQL conexao;
+    MYSQL_RES *result;
+    MYSQL_ROW lin;
+    MYSQL_FIELD *rs;
+    int ret;
+    mysql_init(&conexao);
+    if(mysql_real_connect(&conexao,"localhost","root","","thecolors",0,NULL,0)) {
+        ret = mysql_query(&conexao,"SELECT * FROM inseguro ORDER BY RAND() LIMIT 1;");
+        if(ret) {
+            printf("Falha ao inserir!\n\n");
+        } else {
+        result = mysql_store_result(&conexao);
+        if(result) {
+            rs = mysql_fetch_fields(result);
+            while((lin = mysql_fetch_row(result)) != NULL) {
+            printf("%s\n",lin[1]);
+            }
+        }
+        }
+    mysql_close(&conexao);
+    } else {
+    printf("Conexao falhou!\n");
+    }
+    do //Repetição para perguntar a cor
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+           case 0:
+                humor();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
 void humor ()
 {
    system("color F0");
@@ -213,62 +570,57 @@ void humor ()
     printf("\t\t Como está seu humor agora?\n\n");
     printf("1. Alegre:\n");
     printf("2. Feliz:\n");
-    printf("3. Pensativo:\n");
-    printf("4. Confiante:\n");
-    printf("5. Motivado:\n");
-    printf("6. Cansado:\n");
-    printf("7. Ansioso:\n");
-    printf("8. Deprimido:\n");
-    printf("9. Sonolento:\n");
-    printf("10. Triste:\n");
-    printf("11. Inseguro:\n");
+    printf("3. Confiante:\n");
+    printf("4. Motivado:\n");
+    printf("5. Cansado:\n");
+    printf("6. Ansioso:\n");
+    printf("7. Deprimido:\n");
+    printf("8. Sonolento:\n");
+    printf("9. Triste:\n");
+    printf("10. Inseguro:\n");
     printf("\n0. Voltar\n");
     scanf("%d", &continuar);
     system("cls || clear");
     switch(continuar)
       {
          case 1:
-             psicverm();
+             alegre();
          break;
 
          case 2:
-             psiclar();
+             feliz();
         break;
 
          case 3:
-           psicama();
+           confiante();
          break;
 
          case 4:
-           psicverde();
+           motiv();
          break;
 
          case 5:
-           psicazul();
+           cansado();
          break;
 
          case 6:
-           psicroxo();
+           ansioso();
          break;
 
          case 7:
-           psicmarrom();
+           deprim();
          break;
 
          case 8:
-           psicrosa();
+           sono();
          break;
 
          case 9:
-           psicbranco();
+           triste();
          break;
 
          case 10:
-           psicpreto();
-         break;
-
-         case 11:
-           psicinza();
+           inseg();
          break;
 
          case 0:
@@ -374,7 +726,6 @@ void my_sql()
       strcat(sql, "','");
       strcat(sql, cadastro.idade);
       strcat(sql, "');");
-
 
         printf("Salvo com Sucesso!\n");
         mysql_query(&conexao, sql);
