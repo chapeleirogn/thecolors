@@ -7,15 +7,8 @@
 #include <winsock.h>
 #include <winsock2.h>
 
-void finish_with_error(MYSQL *con)
-{
-  fprintf(stderr, "%s\n", mysql_error(con));
-  mysql_close(con);
-  exit(1);
-}
-
-void imprime(void);
 void allusers(void);
+void imprime(void);
 void espuser(void);
 void main2(void);
 void psico(void);
@@ -47,8 +40,7 @@ void deluser(void);
 void user(void);
 void humor(void);
 void fcadastro(void);
-/*********************************/
-/*Struct principal de cadastro*/
+
 struct rgcad{
     char login[12];
     char passe[12];
@@ -58,9 +50,100 @@ struct rgcad{
     char dnasc[10];
     char permissao[1];
     char idade[2];
-    int contuser;
+    char loginmain[12];
+    char passemain[12];
 }cadastro;
-int main ()
+
+//***LISTA DE PROTOTIPOS***//
+MYSQL_RES *makeQuery(MYSQL conn,char *str);
+void printRes(MYSQL_RES *res);
+void freeRes(MYSQL_RES *res);
+
+//***PRINCIPAL**//
+int main(){
+  MYSQL conn;//variavel de conexao
+  MYSQL_RES *res;//variavel de resultado
+  char *query = "select (login), (senha) from teste;";//query de teste
+
+  mysql_init(&conn);//INICIALIZA CONN
+
+  //TENTA REALIZAR A CONEXAO CASO CONECTE FAZ
+  if(mysql_real_connect(&conn,"localhost","root","","teste",0,NULL,0))
+  {
+    printf("\t\tBanco de Dados conectado!\n\n");
+    res = makeQuery(conn,query);//GUARDA O RESULTADO DA CONSULTA EM RES
+    if(res){//SE A CONSULTA RETORNOU ALGO
+        printf("\t\t\tDigite seu Login: \n");
+        gets(cadastro.loginmain);
+        char *query = "select login from teste;";
+        res = makeQuery(conn,query);
+        printf("%s", res);
+        if (strcmp (cadastro.loginmain,res) == 0 )
+        {
+            freeRes(res);
+            printf("\t\t\tDigite a Senha: \n");
+            gets(cadastro.passemain);
+            char *query = "select (senha) from teste;";
+            res = makeQuery(conn,query);
+            if (strcmp (cadastro.passemain,res) == 0 )
+            {
+                main1();
+            }else
+            {
+                printf("\t\t\tSenha errada!\n");
+            }
+        }else
+        {
+            printf("\t\t\tLogin Inexistente!\n");
+            }
+      freeRes(res);//E LIMPA RES
+    }
+  }else{//CASO A CONEXAO NAO DEU CERTO
+    printf("Erro: %s\n",mysql_error(&conn));//IMPRIME ERRO
+  }
+
+  mysql_close(&conn);//FEIXA CONEXAO COM O BANCO
+  printf("Desconect\n");
+
+return 0;
+}
+
+//***FUNCAO PARA CONSULTA***/
+MYSQL_RES *makeQuery(MYSQL conn,char *str){
+  MYSQL_RES *res;//CRIA VARIAVEL TEMP DE RESULTADO
+  MYSQL conexao;//CRIA VARIAVEL TEMP DE CONEXAO
+  conexao = conn;//ATRIBUI PARA TEMP A CONN
+  if(mysql_query(&conexao,str)){//REALIZA A CONSULTA
+    printf("Erro: %s\n",mysql_error(&conexao));//CASO NAO DE CERTO IMPRIME ERRO
+  }else{//CASO DE CERTO A CONSULTA
+    res = mysql_store_result(&conexao);//GUARDA O RESULTADO EM RES
+    if(res){//SE HOUVER RESULTADO
+      return res;//RETORNA RES
+    }
+  }
+  return NULL;//NO CASO DE ERRO RETORNA NULL
+}
+
+//***FUNCAO PARA IMPRESSAO DE RESULTADO***//
+void printRes(MYSQL_RES *res){
+  MYSQL_ROW rows;//VARIAVEL DE LINHAS(VETOR) (AS TUPLAS DO BANCO)
+  int cont;//CONTADOR
+  //ENQUANTO AS LINHAS FOR DIFERENTE DE NULL FAZ
+  while((rows=mysql_fetch_row(res)) != NULL){
+    //REALIZA O FOR PARA CADA CAMPO DO VETOR DE LINHAS
+    for(cont=0;cont<mysql_num_fields(res);cont++){
+      printf("%s\t",rows[cont]);//IMPRIME
+    }
+    printf("\n");
+  }
+}
+
+//***FUNCAO PARA LIMPAR RES***//
+void freeRes(MYSQL_RES *res){
+  mysql_free_result(res);
+}
+
+void main1 ()
 {
 system("color F0");//Instrução para alterar cor
     int continuar=1;
