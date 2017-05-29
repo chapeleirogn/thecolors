@@ -67,7 +67,6 @@ system("color F0");//Instrução para alterar cor
     printf("\t\tEscolha uma das Opções:\n\n");
     printf("1. Administrador\n");
     printf("2. Usuário\n");
-    printf("3. Salvar no MySql:\n");
     printf("0. Sair\n");
     scanf("%d", &continuar);
     system("cls || clear");
@@ -88,6 +87,7 @@ system("color F0");//Instrução para alterar cor
     }
     return 0;
 }
+
 void user ()
 {
     system("color F0");//Instrução para alterar cor
@@ -163,6 +163,7 @@ void motiv()
         }
     } while(continuar);
 }
+
 void feliz()
 {
     system("color 6F");
@@ -207,6 +208,7 @@ void feliz()
         }
     } while(continuar);
 }
+
 int deprim()
 {
     system("color 6F");
@@ -251,6 +253,7 @@ int deprim()
         }
     } while(continuar);
 }
+
 void alegre()
 {
     system("color E0");
@@ -295,6 +298,7 @@ void alegre()
         }
     } while(continuar);
 }
+
 void triste()
 {
     system("color 2F");
@@ -339,6 +343,7 @@ void triste()
         }
     } while(continuar);
 }
+
 void confiante()
 {
     system("color 1F");
@@ -383,6 +388,7 @@ void confiante()
         }
     } while(continuar);
 }
+
 void cansado()
 {
     system("color 1F");
@@ -427,6 +433,7 @@ void cansado()
         }
     } while(continuar);
 }
+
 void ansioso()
 {
     system("color F0");
@@ -471,6 +478,7 @@ void ansioso()
         }
     } while(continuar);
 }
+
 void sono()
 {
     system("color 8F");
@@ -515,6 +523,7 @@ void sono()
         }
     } while(continuar);
 }
+
 void inseg()
 {
     system("color 8F");
@@ -559,6 +568,7 @@ void inseg()
         }
     } while(continuar);
 }
+
 void humor ()
 {
    system("color F0");
@@ -631,8 +641,7 @@ void humor ()
 
     }
 }
-/*********************************************************/
-/*Função Admin com o menu para escolher a opção certa*/
+
 void admin()
 {
     system("color F0");//Instrução para alterar cor
@@ -640,10 +649,11 @@ void admin()
     setlocale(LC_ALL, "portuguese");
     printf("\t\tEscolha uma das Opções:\n\n");
     printf("1. Cadastro de Usuário:\n");
-    printf("2. Salvar no MYSQL:\n");
-    printf("3. Excluir Usuário Cadastrado:\n");
-    printf("4. Significados das Cores:\n");
-    printf("5. A Psicologia e sua cor Preferida:\n");
+    printf("2. Imprimir Registros da DB:\n");
+    printf("3. Ordenação Crescente dos Nomes:\n");
+    printf("4. Ordenação Decrescente dos Nomes:\n");
+    printf("5. Significados das Cores:\n");
+    printf("6. A Psicologia e sua cor Preferida:\n");
     printf("0. Voltar\n");
     scanf("%d", &continuar);
     system("cls || clear");
@@ -653,15 +663,18 @@ void admin()
           fcadastro();
           break;
         case 2:
-          printf("Em Breve!\n");
+        imprime();
           break;
         case 3:
-          printf("Em Breve!\n");
+          ordemcres();
             break;
         case 4:
-          printf("Em Breve!\n");
+          ordemdecres();
           break;
         case 5:
+          signs();
+          break;
+        case 6:
           psico();
           break;
         case 0:
@@ -671,8 +684,8 @@ void admin()
     printf("Digite uma opção válida!\n");
     }
 }
-/*************************************************/
-/*Função de Cadastro de Usuários*/
+
+
 void fcadastro()
 {
       fflush(stdin);
@@ -702,6 +715,7 @@ void fcadastro()
       printf("\nCadastro Concluído com Sucesso!\n\n");
       my_sql();
 }
+
 void my_sql()
 {
     int continuar=1;
@@ -727,7 +741,7 @@ void my_sql()
       strcat(sql, cadastro.idade);
       strcat(sql, "');");
 
-        printf("Salvo com Sucesso!\n");
+        printf("\nSalvo com Sucesso!\n");
         mysql_query(&conexao, sql);
         mysql_close(&conexao);
     }
@@ -755,8 +769,152 @@ void my_sql()
         }
     } while(continuar);
 }
-/*************************************************/
-/*Função para Escolher a cor Preferida e Imprimir o Significado Psicologico dela*/
+
+void imprime()
+{
+    setlocale(LC_ALL, "portuguese");
+    int continuar=1;
+    MYSQL conn;//variavel de conexao
+    MYSQL_RES *res;//variavel de resultado
+    char *query = "select * from usuarios;";//query de teste
+    mysql_init(&conn);//INICIALIZA CONN
+    if(mysql_real_connect(&conn,"localhost","root","","thecolors",0,NULL,0))
+    {
+        printf("Conectado!\n");
+        res = makeQuery(conn,query);//GUARDA O RESULTADO DA CONSULTA EM RES
+        if(res){//SE A CONSULTA RETORNOU ALGO
+        printRes(res);//IMPRIME
+        freeRes(res);//E LIMPA RES
+        }
+    }else{//CASO A CONEXAO NAO DEU CERTO
+        printf("Erro: %s\n",mysql_error(&conn));//IMPRIME ERRO
+    }
+    mysql_close(&conn);
+    do
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+           case 0:
+                admin();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+
+void ordemcres()
+{
+    setlocale(LC_ALL, "portuguese");
+    int continuar=1;
+    MYSQL conn;//variavel de conexao
+    MYSQL_RES *res;//variavel de resultado
+    char *query = "select nome from usuarios ORDER BY nome ASC;";//query de teste
+    mysql_init(&conn);//INICIALIZA CONN
+    if(mysql_real_connect(&conn,"localhost","root","","thecolors",0,NULL,0))
+    {
+        printf("Conectado!\n");
+        res = makeQuery(conn,query);//GUARDA O RESULTADO DA CONSULTA EM RES
+        if(res){//SE A CONSULTA RETORNOU ALGO
+        printRes(res);//IMPRIME
+        freeRes(res);//E LIMPA RES
+        }
+    }else{//CASO A CONEXAO NAO DEU CERTO
+        printf("Erro: %s\n",mysql_error(&conn));//IMPRIME ERRO
+    }
+    mysql_close(&conn);
+    do
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+           case 0:
+                admin();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+
+void ordemdecres()
+{
+    setlocale(LC_ALL, "portuguese");
+    int continuar=1;
+    MYSQL conn;//variavel de conexao
+    MYSQL_RES *res;//variavel de resultado
+    char *query = "select nome from usuarios ORDER BY nome DESC;";//query de teste
+    mysql_init(&conn);//INICIALIZA CONN
+    if(mysql_real_connect(&conn,"localhost","root","","thecolors",0,NULL,0))
+    {
+        printf("Conectado!\n");
+        res = makeQuery(conn,query);//GUARDA O RESULTADO DA CONSULTA EM RES
+        if(res){//SE A CONSULTA RETORNOU ALGO
+        printRes(res);//IMPRIME
+        freeRes(res);//E LIMPA RES
+        }
+    }else{//CASO A CONEXAO NAO DEU CERTO
+        printf("Erro: %s\n",mysql_error(&conn));//IMPRIME ERRO
+    }
+    mysql_close(&conn);
+    do
+    {
+        printf("\n0. Voltar\n");
+        scanf("%d", &continuar);
+        system("cls || clear");
+        switch(continuar)
+        {
+           case 0:
+                admin();
+                break;
+
+            default:
+                printf("Digite uma opção válida!\n");
+        }
+    } while(continuar);
+}
+
+MYSQL_RES *makeQuery(MYSQL conn,char *str){
+  setlocale(LC_ALL, "portuguese");
+  MYSQL_RES *res;//CRIA VARIAVEL TEMP DE RESULTADO
+  MYSQL conexao;//CRIA VARIAVEL TEMP DE CONEXAO
+  conexao = conn;//ATRIBUI PARA TEMP A CONN
+  if(mysql_query(&conexao,str)){//REALIZA A CONSULTA
+    printf("Erro: %s\n",mysql_error(&conexao));//CASO NAO DE CERTO IMPRIME ERRO
+  }else{//CASO DE CERTO A CONSULTA
+    res = mysql_store_result(&conexao);//GUARDA O RESULTADO EM RES
+    if(res){//SE HOUVER RESULTADO
+      return res;//RETORNA RES
+    }
+  }
+  return NULL;//NO CASO DE ERRO RETORNA NULL
+}
+
+void printRes(MYSQL_RES *res){
+  setlocale(LC_ALL, "portuguese");
+  MYSQL_ROW rows;//VARIAVEL DE LINHAS(VETOR) (AS TUPLAS DO BANCO)
+  int cont;//CONTADOR
+  //ENQUANTO AS LINHAS FOR DIFERENTE DE NULL FAZ
+  while((rows=mysql_fetch_row(res)) != NULL){
+    //REALIZA O FOR PARA CADA CAMPO DO VETOR DE LINHAS
+    for(cont=0;cont<mysql_num_fields(res);cont++){
+      printf("%s\t",rows[cont]);
+    }
+    printf("\n\n");
+  }
+}
+
+void freeRes(MYSQL_RES *res){
+  mysql_free_result(res);
+}
+
 void psico ()
 {
     system("color F0");
@@ -839,7 +997,6 @@ void psico ()
 
     }
 }
-/*Todas as Funções com Iniciais "Psic" possuem um printf com o significado psicologico da cor*/
 void psicverm()
 {
     system("color F4");
@@ -1082,9 +1239,7 @@ void psicinza()
         }
     } while(continuar);
 }
-/***************************************************************************/
-/*Função com Menu para Imprimir Significado das Cores e outras Informações*/
-/***************************************************************************/
+
 void signs ()
 {
     system("color F0");
@@ -1166,8 +1321,7 @@ void signs ()
 
     }
 }
-/*************************************************/
-/*Todas as Funções de cores Imprimem: Significado, Cor oposta, Referências e Efeito causado na Pessoa*/
+
 void vermelho ()
 {
     system("color F4");
